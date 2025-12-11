@@ -1,18 +1,17 @@
+# Neural-Guided Proof Search
+
+This project combines neural networks with propositional logic.  
+A symbolic prover (using Z3 + hand-written inference rules) generates a dataset of shortest proofs for randomly sampled logical states.  
+A neural network is then trained to predict the next proof step, effectively learning to imitate and accelerate symbolic reasoning.
+
+---
+
 ## Installation
 
-Clone the repo and install dependencies:
-
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
-
-python3 -m venv venv
-source venv/bin/activate      # macOS / Linux
-# venv\Scripts\activate       # Windows
+git clone https://github.com/sferrante/Neuro-Symbolic-Reasoning.git
+cd Neuro-Symbolic-Reasoning
 
 pip install numpy
 pip install z3-solver
-
-# CPU PyTorch:
 pip install torch --index-url https://download.pytorch.org/whl/cpu
-# (or choose the CUDA version based on your system)
