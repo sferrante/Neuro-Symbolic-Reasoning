@@ -15,6 +15,7 @@ cd Neuro-Symbolic-Reasoning
 pip install numpy
 pip install z3-solver
 pip install torch --index-url https://download.pytorch.org/whl/cpu
+```
 
 You can now open the project in VSCode, Jupyter Notebook, or any Python IDE and run the code normally.
 
