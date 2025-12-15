@@ -3,12 +3,8 @@ import torch
 from z3 import *
 import random
 from collections import deque
+from utils import * 
 
-
-
-def random_subset(all_formulas, k_min=1, k_max=4):
-    k = random.randint(k_min, min(k_max, len(all_formulas)))
-    return random.sample(all_formulas, k)
 
 # Global symbol table
 SYMBOLS = {
@@ -44,26 +40,44 @@ def parse(s):
     return SYMBOLS[s]
 
 
-
 def verify_step(known_facts, proposed_fact):
-    """
-    known_facts: list of strings, e.g. ["A", "A->B"]
-    proposed_fact: string, e.g. "B"
-    """
-
-    solver = Solver()
-
-    # Add all known facts
-    for fact in known_facts:
-        solver.add(parse(fact))
-
-    # Add the negation of what we want to prove
-    solver.add(Not(parse(proposed_fact)))
-
-    result = solver.check()
-
-    # If UNSAT, the negation is impossible => fact is implied
+    """ known_facts: list of strings, e.g. ["A", "A->B"] proposed_fact: string, e.g. "B" """ 
+    solver = Solver() 
+    # Add all known facts 
+    for fact in known_facts: 
+        solver.add(parse(fact)) 
+    # Add the negation of what we want to prove 
+    solver.add(Not(parse(proposed_fact))) 
+    result = solver.check() # If UNSAT, the negation is impossible => fact is implied 
     return result == unsat
+
+
+
+
+def nn_score(state, prop, model, ALL_FORMULAS):
+    x = np.concatenate([encode_state(state, ALL_FORMULAS), encode_state([prop], ALL_FORMULAS)]).astype(np.float32)
+    x = torch.tensor([x])
+    with torch.no_grad():
+        return model(x).item()
+    
+        
+def rank_candidates(state, model, ALL_FORMULAS):
+    scores = []
+    for f in ALL_FORMULAS:
+        s = nn_score(state, f, model, ALL_FORMULAS)
+        scores.append((f, s))
+    scores.sort(key=lambda x: x[1], reverse=True)
+    return scores
+
+
+def pick_valid_step(state, model, ALL_FORMULAS, top_k=5):
+    ranked = rank_candidates(state, model, ALL_FORMULAS)
+    for f, score in ranked[:top_k]:
+        if verify_step(state, f) and f not in state:
+            return f, score   # ACCEPTED by Z3
+
+    return None, None   # NN failed to find a valid step
+
 
 
 ### Shorter version to find the smallest possible step (for theorem proving...) 
@@ -107,44 +121,10 @@ def verify_step_small(state, f):
 
     return False
 
-
-
-## One-Hot Encoding
-def encode_state(known, ALL_FORMULAS):
-    OneHot_Map = {f:i for i,f in enumerate(ALL_FORMULAS)}
-    v = np.zeros(len(ALL_FORMULAS))
-    for f in known:
-        v[OneHot_Map[f]] = 1
-    return v
-
-
-def nn_score(state, prop, model, ALL_FORMULAS):
-    x = np.concatenate([encode_state(state, ALL_FORMULAS), encode_state([prop], ALL_FORMULAS)]).astype(np.float32)
-    x = torch.tensor([x])
-    with torch.no_grad():
-        return model(x).item()
-    
-def rank_candidates(state, model, ALL_FORMULAS):
-    scores = []
-    for f in ALL_FORMULAS:
-        s = nn_score(state, f, model, ALL_FORMULAS)
-        scores.append((f, s))
-    scores.sort(key=lambda x: x[1], reverse=True)
-    return scores
-
-
-def pick_valid_step(state, model, ALL_FORMULAS, top_k=5):
-    ranked = rank_candidates(state, model, ALL_FORMULAS)
-    for f, score in ranked[:top_k]:
-        if verify_step(state, f) and f not in state:
-            return f, score   # ACCEPTED by Z3
-
-    return None, None   # NN failed to find a valid step
-
     
     
     
-    
+   
     
 # ## BFS Method
 
@@ -221,9 +201,5 @@ def find_all_shortest_proofs(initial_state, ALL_FORMULAS, max_depth=5):
     return results
 
 
-
-    
-    
-    
     
     
