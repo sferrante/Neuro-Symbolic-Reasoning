@@ -93,7 +93,7 @@ class DeepSetReasoner(nn.Module):
         
         
 
-    def forward(self, x_state, x_goal):
+    def forward(self, X):
         
         # X = [x_state, x_goal]  with shape (N_tr, 2*n_formulas)
         x_state = X[:, :self.n_formulas]      # (N_tr, n_formulas)
@@ -104,7 +104,6 @@ class DeepSetReasoner(nn.Module):
 
         # permutation-invariant sum over formulas in the state
         state_emb = x_state @ E               # (N_tr, d_embed)
-
         goal_emb = self.goal_proj(x_goal)     # (N_tr, d_embed)
         
         # combine and predict next rule
