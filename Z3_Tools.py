@@ -11,7 +11,12 @@ SYMBOLS = {
     "A": Bool("A"),
     "B": Bool("B"),
     "C": Bool("C"),
+<<<<<<< HEAD
     "D": Bool("D")
+=======
+    "D": Bool("D"),
+    "E": Bool("E")
+>>>>>>> 5af86c3 (Added transformer (encoder) to models.py)
 }
 
 def parse(s):
