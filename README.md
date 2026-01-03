@@ -8,8 +8,8 @@ A neural network is then trained to predict the next proof step, learning to imi
 
 ## Contents
 
-- `MakeProofData.ipynb` — Generates proof data by sampling random logical states and running the symbolic prover to produce *shortest* proof traces. :contentReference[oaicite:2]{index=2}  
-- `ProofAgent.ipynb` — Trains/evaluates a neural “next-step” policy on the generated proof dataset; can be used to test neural-guided proof search. :contentReference[oaicite:3]{index=3}  
+- `MakeProofData.ipynb` — Generates proof data by sampling random logical states and running the symbolic prover to produce *shortest* proof traces. 
+- `ProofAgent.ipynb` — Trains/evaluates a neural “next-step” policy on the generated proof dataset; can be used to test neural-guided proof search.   
 - `Z3_Tools.py` — Z3 helpers + hand-written inference rules / utilities used by the symbolic prover.   
 - `models.py` — Neural architectures for next-step prediction (and any related training helpers). 
 - `utils.py` — Shared utilities (encoding/decoding, batching, metrics, etc.). 
