@@ -4,7 +4,6 @@ import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
 
-#
 class MLP(nn.Module):
     def __init__(self, input_dim, hidden_dims, output_dim):
         super().__init__()
@@ -23,22 +22,22 @@ class MLP(nn.Module):
         return self.net(x)
     
     
-def train_model(X, Y, output_dim, 
-                hidden_dims=[128,64], epochs=1500, lr=1e-3,
-                loss_fn=None, plot=True, use_deepsets=False):
-    # Split
-    Xtr, Xte, Ytr, Yte = train_test_split(X, Y, test_size=0.2, random_state=0)
+# def train_model(X, Y, output_dim, 
+#                 hidden_dims=[128,64], epochs=1500, lr=1e-3,
+#                 loss_fn=None, plot=True, use_deepsets=False):
+#     # Split
+#     Xtr, Xte, Ytr, Yte = train_test_split(X, Y, test_size=0.2, random_state=0)
     
-    # Convert to torch
-    Xt = torch.tensor(Xtr, dtype=torch.float32)
-    yt = torch.tensor(Ytr, dtype=torch.long)
+#     # Convert to torch
+#     Xt = torch.tensor(Xtr, dtype=torch.float32)
+#     yt = torch.tensor(Ytr, dtype=torch.long)
     
     # Call model
-#     model = MLP(
-#         input_dim = X.shape[1],
-#         hidden_dims = hidden_dims,
-#         output_dim = output_dim
-#     )
+    # model = MLP(
+    #     input_dim = X.shape[1],
+    #     hidden_dims = hidden_dims,
+    #     output_dim = output_dim
+    # )
 
 
 class TransformerEnc(nn.Module):
@@ -97,11 +96,13 @@ def train_model(X, Y, output_dim, batch_size=512,
                printevery=200):
     # Split
     Xtr, Xte, Ytr, Yte = train_test_split(X, Y, test_size=0.2, random_state=0)
-    
-    # # Convert to torch
-    # Xt = torch.tensor(Xtr, dtype=torch.float32)
-    # yt = torch.tensor(Ytr, dtype=torch.long)
+    # Take from np arrays, to not copy data unnecessarily
+    Xtr = np.asarray(Xtr, dtype=np.float32)
+    Ytr = np.asarray(Ytr, dtype=np.int64)
+    Xt  = torch.from_numpy(Xtr)   # no copy
+    yt  = torch.from_numpy(Ytr)
 
+    
     
     if use_deepsets:
         model = DeepSetReasoner(
@@ -110,13 +111,11 @@ def train_model(X, Y, output_dim, batch_size=512,
             hidden_dims=hidden_dims,
         )
         opt = torch.optim.Adam(model.parameters(), lr=lr)
-        Xt = torch.tensor(Xtr, dtype=torch.float32)   
         
     elif use_transformer: 
         F = X.shape[-1]  # Here, X should be  (N, T, F)
         model = TransformerEnc(F=F, output_dim=output_dim, max_T=12)
         opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0)
-        Xt = torch.tensor(Xtr, dtype=torch.float32)   # (B, T, F)
         
     else:
         model = MLP(
@@ -124,25 +123,7 @@ def train_model(X, Y, output_dim, batch_size=512,
             hidden_dims=hidden_dims,
             output_dim=output_dim,
         )
-    
-    opt = torch.optim.Adam(model.parameters(), lr=lr)
-    
-    # Train
-    losses = []
-    for epoch in range(epochs):
-        opt.zero_grad()
-        loss = loss_fn(model(Xt), yt)
-        loss.backward()
-        opt.step()
-        
-        if epoch % 200 == 0:
-            print(epoch, loss.item())
-        losses.append(loss.item())
         opt = torch.optim.Adam(model.parameters(), lr=lr)
-        Xt = torch.tensor(Xtr, dtype=torch.float32)   # (B, D)
-
-    yt = torch.tensor(Ytr, dtype=torch.long)
-    
     
     # Train
     losses = []; batch_size=batch_size;
@@ -162,7 +143,7 @@ def train_model(X, Y, output_dim, batch_size=512,
         if epoch % printevery == 0:
             print(epoch, epoch_loss)
         losses.append(epoch_loss)
-        if plot==True: plt.plot(losses)
+    if plot==True: plt.plot(losses)
         
     return model, (Xte, Yte)
             
