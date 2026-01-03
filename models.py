@@ -21,7 +21,6 @@ class MLP(nn.Module):
     
     def forward(self, x):
         return self.net(x)
-<<<<<<< HEAD
     
     
 def train_model(X, Y, output_dim, 
@@ -40,7 +39,6 @@ def train_model(X, Y, output_dim,
 #         hidden_dims = hidden_dims,
 #         output_dim = output_dim
 #     )
-=======
 
 
 class TransformerEnc(nn.Module):
@@ -105,15 +103,12 @@ def train_model(X, Y, output_dim, batch_size=512,
     # yt = torch.tensor(Ytr, dtype=torch.long)
 
     
->>>>>>> 5af86c3 (Added transformer (encoder) to models.py)
     if use_deepsets:
         model = DeepSetReasoner(
             n_formulas=output_dim,
             d_embed=64,
             hidden_dims=hidden_dims,
         )
-<<<<<<< HEAD
-=======
         opt = torch.optim.Adam(model.parameters(), lr=lr)
         Xt = torch.tensor(Xtr, dtype=torch.float32)   
         
@@ -123,14 +118,12 @@ def train_model(X, Y, output_dim, batch_size=512,
         opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0)
         Xt = torch.tensor(Xtr, dtype=torch.float32)   # (B, T, F)
         
->>>>>>> 5af86c3 (Added transformer (encoder) to models.py)
     else:
         model = MLP(
             input_dim=X.shape[1],
             hidden_dims=hidden_dims,
             output_dim=output_dim,
         )
-<<<<<<< HEAD
     
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     
@@ -145,7 +138,6 @@ def train_model(X, Y, output_dim, batch_size=512,
         if epoch % 200 == 0:
             print(epoch, loss.item())
         losses.append(loss.item())
-=======
         opt = torch.optim.Adam(model.parameters(), lr=lr)
         Xt = torch.tensor(Xtr, dtype=torch.float32)   # (B, D)
 
@@ -170,9 +162,7 @@ def train_model(X, Y, output_dim, batch_size=512,
         if epoch % printevery == 0:
             print(epoch, epoch_loss)
         losses.append(epoch_loss)
-        
->>>>>>> 5af86c3 (Added transformer (encoder) to models.py)
-    if plot==True: plt.plot(losses)
+        if plot==True: plt.plot(losses)
         
     return model, (Xte, Yte)
             
