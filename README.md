@@ -86,7 +86,7 @@ But as training data includes deeper proofs (Depth ≤ 2,3,4,5), performance rec
 ![Accuracy vs Depth](Plots/Accuracy_vs_Depth.png)
 
 ### Accuracy vs Depth (easier to see separated ...)
-![Accuracy vs Depth](Plots/Accuracy_vs_Depth_Separated.png)
+![Accuracy vs Depth](Plots/Accuracy_vs_Depth_Separate.png)
 
 ---
 
