@@ -68,6 +68,7 @@ The figure below shows **out-of-distribution (OOD) generalization** in proof dep
 
 But as training data includes deeper proofs (Depth ≤ 2,3,4,5), performance recovers to near-perfect accuracy across depths.  **Deep Sets** appears slightly more robust than an MLP under this depth shift, consistent with the fact that it is permutation-invariant and therefore doesn’t waste capacity learning an arbitrary ordering of the “known” statements in the input.
 
+
 ### Accuracy vs Depth
 ![Accuracy vs Depth](Plots/Accuracy_vs_Depth.png)
 
