@@ -87,6 +87,43 @@ class TransformerEnc(nn.Module):
         return self.out(goal_h) 
 
 
+class TransformerEnc2(nn.Module):
+    def __init__(self, F, output_dim, max_T,
+                 d_model=64, n_head=4, n_layers=2, d_ff=64, dropout=0.0):
+        super().__init__()
+        self.in_proj = nn.Linear(F, d_model)
+        self.pos_emb = nn.Embedding(max_T, d_model)
+        enc_layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=n_head, dim_feedforward=d_ff, 
+                                               dropout=dropout, batch_first=True)
+
+        self.encoder = nn.TransformerEncoder(enc_layer, num_layers=n_layers)
+        self.out = nn.Linear(d_model, output_dim)
+        
+    def forward(self, x):  # x is shape [B, T, F]
+        # x: (B, T, F). For one example in batch, it looks like: 
+        # [ onehot(A), onehot(A->B), onehot(B->C), onehot(C) ]  (goal is last)
+        B, T, F = x.shape
+        
+        # marks padded rows; real rows like onehot(A) are nonzero
+        pad_mask = (x.abs().sum(dim=-1) == 0)  # (B, T) 
+
+        # project each token (A, A->B, B->C, C) from F-dim to d_model-dim ... add pos enc...
+        pos = torch.arange(x.size(1), device=x.device).unsqueeze(0)      # (1, T)
+        pos_emb = self.pos_emb(pos).clone()                              # (1, T, d_model)
+        pos_emb[:, :-1, :] = 0
+        h = self.in_proj(x) + pos_emb                                    # (B, T, d_model) 
+        
+        # self-attention lets tokens interact (e.g. A attends to A->B, B->C, goal C, etc.)
+        h = self.encoder(h, src_key_padding_mask=pad_mask) 
+        goal_h = h[:, -1, :]   
+        
+        return self.out(goal_h) 
+
+
+
+
+
+
 
 
     
@@ -114,7 +151,7 @@ def train_model(X, Y, output_dim, batch_size=512,
         
     elif use_transformer: 
         F = X.shape[-1]  # Here, X should be  (N, T, F)
-        model = TransformerEnc(F=F, output_dim=output_dim, max_T=12)
+        model = TransformerEnc2(F=F, output_dim=output_dim, max_T=12)
         opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0)
         
     else:
