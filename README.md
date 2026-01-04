@@ -19,6 +19,18 @@ Various NNs are then trained to predict the next proof step, learning to imitate
 
 ---
 
+## Background
+
+Classical symbolic theorem provers are reliable but can be slow because search branching explodes.
+A common hybrid idea is: keep the symbolic verifier (so every step is checkable), but learn a neural policy that proposes the most promising next rule/action.
+
+This repo implements that loop for *propositional logic*:
+1) generate shortest proof traces with a symbolic prover (Z3 + custom rules),
+2) train a neural network to imitate the next proof step,
+3) use the neural net to guide proof search.
+
+---
+
 ## Model architectures
 
 This repo compares three next-step predictors:
@@ -29,18 +41,6 @@ This repo compares three next-step predictors:
   We use positional encoding **only on the final token (the goal)** so the model can distinguish “goal” from the unordered
   set of known formulas, while keeping the known-formula tokens effectively order-agnostic.
 
-
----
-
-## Background
-
-Classical symbolic theorem provers are reliable but can be slow because search branching explodes.
-A common hybrid idea is: keep the symbolic verifier (so every step is checkable), but learn a neural policy that proposes the most promising next rule/action.
-
-This repo implements that loop for *propositional logic*:
-1) generate shortest proof traces with a symbolic prover (Z3 + custom rules),
-2) train a neural network to imitate the next proof step,
-3) use the neural net to guide proof search.
 
 ---
 
