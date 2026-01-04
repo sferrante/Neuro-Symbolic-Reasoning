@@ -1,4 +1,4 @@
- # Neural-Guided Proof Search
+ # Neuro-Symbolic Prover
 
 This project combines neural networks with propositional logic.
 A symbolic prover (using Z3 + hand-written inference rules) generates a dataset of shortest proofs for randomly sampled logical states.
