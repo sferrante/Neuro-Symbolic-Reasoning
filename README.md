@@ -11,11 +11,24 @@ Various NNs are then trained to predict the next proof step, learning to imitate
 - `MakeProofData.ipynb` — Generates proof data by sampling random logical states and running the symbolic prover to produce *shortest* proof traces. 
 - `ProofAgent.ipynb` — Trains/evaluates a neural “next-step” policy on the generated proof dataset; can be used to test neural-guided proof search.   
 - `Z3_Tools.py` — Z3 helpers + hand-written inference rules / utilities used by the symbolic prover.   
-- `models.py` — Neural architectures for next-step prediction (and any related training helpers). 
+- `models.py` — Neural architectures for next-step prediction (**MLP**, **Deep Sets**, and **encoder-only Transformer**) and training helpers. 
 - `utils.py` — Shared utilities (encoding/decoding, batching, etc.). 
 - `Data/` — Stored dataset artifacts (`.npz`) used by the notebooks.  
   - `Data/proof_data_steps.npz` — saved proof traces / supervision targets (next-step labels).
   - `Data/depths.npz` — saved depths of generated proofs.
+
+---
+
+## Model architectures
+
+This repo compares three next-step predictors:
+
+- **MLP:** flattens (known formulas + goal) into a single vector and predicts the next rule/formula.
+- **Deep Sets:** permutation-invariant over the set of known formulas, then conditions on the goal.
+- **Transformer (encoder-only):** treats the known formulas as tokens and appends the goal as the final token.
+  We use positional encoding **only on the final token (the goal)** so the model can distinguish “goal” from the unordered
+  set of known formulas, while keeping the known-formula tokens effectively order-agnostic.
+
 
 ---
 
@@ -66,7 +79,7 @@ Each step lists the inference rule used and the newly derived statement added to
 
 The figure below shows **out-of-distribution (OOD) generalization** in proof depth: when models are trained only on shallow proofs (e.g. Depth ≤ 1, blue), accuracy drops sharply as we evaluate on deeper proofs (Depth 3–5), indicating a clear distribution shift. 
 
-But as training data includes deeper proofs (Depth ≤ 2,3,4,5), performance recovers to near-perfect accuracy across depths.  **Deep Sets** appears slightly more robust than an MLP under this depth shift, consistent with the fact that it is permutation-invariant and therefore doesn’t waste capacity learning an arbitrary ordering of the “known” statements in the input.
+But as training data includes deeper proofs (Depth ≤ 2,3,4,5), performance recovers to near-perfect accuracy across depths.  **Deep Sets** appears slightly more robust than an MLP under this depth shift, consistent with the fact that it is permutation-invariant and therefore doesn’t waste capacity learning an arbitrary ordering of the “known” statements in the input. The encoder-only Transformer is marginally strongest overall, probably because self-attention can model inter-statement (“token–token”) interactions directly when deciding which next step to apply.
 
 
 ### Accuracy vs Depth
