@@ -82,5 +82,7 @@ git clone https://github.com/sferrante/Neuro-Symbolic-Reasoning.git
 cd Neuro-Symbolic-Reasoning
 
 pip install numpy
+pip install matplotlib
+pip install sklearn
 pip install z3-solver
 pip install torch --index-url https://download.pytorch.org/whl/cpu
