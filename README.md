@@ -38,9 +38,7 @@ Each step lists the inference rule used and the newly derived statement added to
 
 **Start:**
 
-  goal  : B & C
-  
-  known : ['A', 'D->E', 'E->C', 'B&D', 'C|D']
+  Given ['A', 'D->E', 'E->C', 'B&D', 'C|D'], prove B&C
 
 **Step 1** (∧-Elimination):
 
