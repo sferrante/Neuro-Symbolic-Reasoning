@@ -41,7 +41,9 @@ Start:
   known : ['A', 'D->E', 'E->C', 'B&D', 'C|D']
 
 Step 1 (∧-Elimination):
+
   derive: B
+  
   known : ['A', 'D->E', 'E->C', 'B&D', 'C|D', 'B']
 
 Step 2 (∧-Elimination):
