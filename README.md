@@ -42,24 +42,22 @@ Start:
 
 Step 1 (∧-Elimination):
 
-  derive: B
-  
   known : ['A', 'D->E', 'E->C', 'B&D', 'C|D', 'B']
 
 Step 2 (∧-Elimination):
-  derive: D
+
   known : ['A', 'D->E', 'E->C', 'B&D', 'C|D', 'B', 'D']
 
 Step 3 (→-Elimination / Modus Ponens):
-  derive: E
+
   known : ['A', 'D->E', 'E->C', 'B&D', 'C|D', 'B', 'D', 'E']
 
 Step 4 (→-Elimination / Modus Ponens):
-  derive: C
+
   known : ['A', 'D->E', 'E->C', 'B&D', 'C|D', 'B', 'D', 'E', 'C']
 
   Step 5 (∧-Introduction):
-    derive: B & C
+
     known : ['A', 'D->E', 'E->C', 'B&D', 'C|D', 'B', 'D', 'E', 'C', 'B&C'] ✅
 
 
